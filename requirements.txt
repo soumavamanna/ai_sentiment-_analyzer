@@ -1,0 +1,10 @@
+aiohttp
+pandas
+sqlalchemy
+psycopg2-binary
+python-dotenv
+redis
+yfinance
+finnhub-python
+praw
+schedule

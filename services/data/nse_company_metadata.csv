@@ -1,0 +1,6 @@
+ticker,company_name,sector,industry,market_cap,index_memberships,aliases
+RELIANCE.NS,Reliance Industries,Energy,Oil & Gas,Large Cap,"NIFTY50|NIFTYENERGY","Reliance|Reliance Industries|RIL"
+TCS.NS,Tata Consultancy Services,IT,Software,Large Cap,"NIFTY50|NIFTYIT","TCS|Tata Consultancy Services"
+INFY.NS,Infosys,IT,Software,Large Cap,"NIFTY50|NIFTYIT","Infosys|INFY"
+HDFCBANK.NS,HDFC Bank,Banking,Private Bank,Large Cap,"NIFTY50|NIFTYBANK","HDFC Bank|HDFC"
+SBIN.NS,State Bank of India,Banking,PSU Bank,Large Cap,"NIFTY50|NIFTYBANK","SBI|State Bank of India"
