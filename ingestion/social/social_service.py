@@ -1,39 +1,28 @@
-from ingestion.social.reddit_collector import RedditCollector
-from ingestion.social.moneycontrol_collector import MoneyControlCollector
-import os
-from dotenv import load_dotenv
-load_dotenv()
+from ingestion.social.tradingqna_collector import TradingQNACollector
+from database.repositories.social_repo import save_social_posts
+
 class SocialService:
-
     def __init__(self):
-        self.moneycontrol = MoneyControlCollector()
+        # You can keep Moneycontrol here if you fixed the API issue, 
+        # or just use TradingQ&A.
+        self.tradingqna = TradingQNACollector()
 
-        """ self.reddit = RedditCollector(
-            client_id=os.getenv("REDDIT_CLIENT_ID"),
-            client_secret=os.getenv("REDDIT_CLIENT_SECRET"),
-            user_agent="stockbot"
-        )"""
-
-        
-
-    def collect(self):
-
+    async def collect(self):
         data = []
 
-        """ try:
-            data.extend(
-                self.reddit.fetch_posts()
-            )
-        except Exception as e:
-            print(e)"""
-
         try:
-            data.extend(
-                self.moneycontrol.fetch_discussions(
-                    "https://mmb.moneycontrol.com"
-                )
-            )
+            # Await the TradingQ&A scraper
+            qna_posts = await self.tradingqna.run_collection()
+            data.extend(qna_posts)
         except Exception as e:
-            print(e)
+            print(f"Error executing TradingQ&A collector: {e}")
+
+        # Save to PostgreSQL if posts were found
+        if data:
+            # Assuming save_social_posts handles synchronous SQLAlchemy commits
+            save_social_posts(data)
+            print(f"Successfully saved {len(data)} TradingQ&A posts.")
+        else:
+            print("No new social posts found.")
 
         return data

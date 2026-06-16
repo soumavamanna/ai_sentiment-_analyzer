@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS companies (
-     ticker VARCHAR(20) PRIMARY KEY,
+    ticker VARCHAR(20) PRIMARY KEY,
     company_name VARCHAR(255),
     sector VARCHAR(100),
     industry VARCHAR(100),
@@ -43,12 +43,12 @@ CREATE TABLE IF NOT EXISTS market_prices (
 
     UNIQUE(ticker, market_date)
 );
-CREATE TABLE article_company_map (
+CREATE TABLE IF NOT EXISTS article_company_map (
     article_id VARCHAR(255),
     ticker VARCHAR(20),
     PRIMARY KEY(article_id, ticker)
 );
-CREATE TABLE sector_membership (
+CREATE TABLE IF NOT EXISTS sector_membership (
 
     ticker VARCHAR(20),
     sector_name VARCHAR(100),
@@ -57,11 +57,21 @@ CREATE TABLE sector_membership (
         sector_name
     )
 );
-CREATE TABLE sector_signals (
+CREATE TABLE IF NOT EXISTS sector_signals (
 
     id SERIAL PRIMARY KEY,
     sector_name VARCHAR(100),
     sentiment_score FLOAT,
     article_count INTEGER,
     created_at TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS announcements
+(
+    announcement_id TEXT PRIMARY KEY,
+    exchange TEXT,
+    symbol TEXT,
+    subject TEXT,
+    details TEXT,
+    timestamp TIMESTAMP,
+    attachment_url TEXT
 );

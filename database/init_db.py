@@ -2,7 +2,7 @@ from pathlib import Path
 
 from sqlalchemy import text
 
-from database.db import engine
+from db import engine
 
 
 def initialize_database():
