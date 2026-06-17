@@ -1,54 +1,202 @@
 import asyncio
 import yfinance as yf
-from services.universe_service import get_universe
+import numpy as np
 
-def _blocking_download(ticker):
-    """Helper function to execute the blocking yfinance network call safely in a thread."""
+from services.universe_service import get_universe
+from services.technical_factors import (
+    compute_rsi,
+    compute_atr
+)
+def _batch_download(tickers):
+
     return yf.download(
-        ticker,
-        period="5d",
+        tickers=tickers,
+        period="6mo",
+        group_by="ticker",
         auto_adjust=False,
-        progress=False
+        progress=False,
+        threads=True
+    )
+async def fetch_market_data():
+    NIFTY_SYMBOL = "^NSEI"
+    universe = [
+        str(x).strip()
+        for x in get_universe()
+        if str(x).strip()
+    ]
+
+    download_symbols = universe + [
+        NIFTY_SYMBOL
+    ]
+
+    raw = await asyncio.to_thread(
+        _batch_download,
+        download_symbols
+    )
+    nifty_df = raw[NIFTY_SYMBOL].copy()
+
+    nifty_df["nifty_return_20d"] = (
+        nifty_df["Close"]
+        .pct_change(20)
     )
 
-async def fetch_market_data():
-    """Asynchronously fetches current market data for your entire ticker universe concurrently."""
-    universe = get_universe()
-    market_data = []
+    market_rows = []
 
-    async def process_ticker(raw_ticker):
-        ticker = str(raw_ticker).strip()
-        if not ticker:
-            return None
+    for ticker in universe:
 
         try:
-            # Offload the blocking yfinance download call to a separate background thread
-            data = await asyncio.to_thread(_blocking_download, ticker)
-            
-            if data.empty:
-                print(f"⚠️ Skipping {ticker}: No data found on Yahoo Finance.")
-                return None
 
-            latest = data.iloc[-1]
+            if ticker not in raw.columns.levels[0]:
+                continue
 
-            # Parse safe scalar values handling potential pandas MultiIndex variations
-            return {
+            df = raw[ticker].copy()
+
+            if len(df) < 30:
+                continue
+
+            df["return_1d"] = (
+                df["Close"].pct_change(1)
+            )
+
+            df["return_5d"] = (
+                df["Close"].pct_change(5)
+            )
+
+            df["return_20d"] = (
+                df["Close"].pct_change(20)
+            )
+
+            df["volatility_20d"] = (
+                df["Close"]
+                .pct_change()
+                .rolling(20)
+                .std()
+                * np.sqrt(252)
+            )
+
+            df["rsi_14"] = compute_rsi(
+                df["Close"]
+            )
+
+            df["atr_14"] = compute_atr(
+                df
+            )
+
+            df["volume_ratio"] = (
+                df["Volume"]
+                /
+                df["Volume"]
+                .rolling(20)
+                .mean()
+            )
+            df["prev_close"] = (
+                df["Close"]
+                .shift(1)
+            )
+
+            df["gap_pct"] = (
+                (df["Open"] - df["prev_close"])
+                /
+                df["prev_close"]
+            )
+            df = df.join(
+                nifty_df["nifty_return_20d"],
+                how="left"
+            )
+
+            df["relative_strength"] = (
+                df["return_20d"]
+                -
+                df["nifty_return_20d"]
+            )
+            df["dollar_volume"] = (
+                df["Close"]
+                *
+                df["Volume"]
+            )
+            df["volume_surge"] = (
+                df["Volume"]
+                /
+                df["Volume"]
+                .rolling(60)
+                .mean()
+            )
+
+            latest = df.iloc[-1]
+
+            market_rows.append({
+
                 "ticker": ticker,
-                "market_date": latest.name.date(),
-                "open": float(latest["Open"].iloc[0]) if hasattr(latest["Open"], "iloc") else float(latest["Open"]),
-                "high": float(latest["High"].iloc[0]) if hasattr(latest["High"], "iloc") else float(latest["High"]),
-                "low": float(latest["Low"].iloc[0]) if hasattr(latest["Low"], "iloc") else float(latest["Low"]),
-                "close": float(latest["Close"].iloc[0]) if hasattr(latest["Close"], "iloc") else float(latest["Close"]),
-                "volume": int(latest["Volume"].iloc[0]) if hasattr(latest["Volume"], "iloc") else int(latest["Volume"])
-            }
+
+                "market_date":
+                    latest.name.date(),
+
+                "open":
+                    float(latest["Open"]),
+
+                "high":
+                    float(latest["High"]),
+
+                "low":
+                    float(latest["Low"]),
+
+                "close":
+                    float(latest["Close"]),
+
+                "volume":
+                    int(latest["Volume"]),
+
+                "return_1d":
+                    float(latest["return_1d"]),
+
+                "return_5d":
+                    float(latest["return_5d"]),
+
+                "return_20d":
+                    float(latest["return_20d"]),
+
+                "volatility_20d":
+                    float(
+                        latest["volatility_20d"]
+                    ),
+
+                "rsi_14":
+                    float(
+                        latest["rsi_14"]
+                    ),
+
+                "atr_14":
+                    float(
+                        latest["atr_14"]
+                    ),
+                "volume_ratio":
+                    float(
+                        latest["volume_ratio"]
+                    ),
+                 "gap_pct":
+                    float(
+                        latest["gap_pct"]
+                    ),
+
+                "relative_strength":
+                    float(
+                        latest["relative_strength"]
+                    ),
+
+                "dollar_volume":
+                    float(
+                        latest["dollar_volume"]
+                    ),
+                 "volume_surge":
+                    float(
+                        latest["volume_surge"]
+                    )
+                })
+
         except Exception as e:
-            print(f"❌ Error downloading market data for {ticker}: {e}")
-            return None
 
-    # Trigger downloads for all tickers concurrently using asyncio.gather
-    tasks = [process_ticker(ticker) for ticker in universe]
-    results = await asyncio.gather(*tasks)
+            print(
+                f"Error processing {ticker}: {e}"
+            )
 
-    # Filter out None results from skipped/failed tickers
-    market_data = [res for res in results if res is not None]
-    return market_data
+    return market_rows

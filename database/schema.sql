@@ -28,9 +28,12 @@ CREATE TABLE IF NOT EXISTS social_posts (
 );
 
 CREATE TABLE IF NOT EXISTS market_prices (
+
     id SERIAL PRIMARY KEY,
-    ticker VARCHAR(20),
-    market_date DATE,
+
+    ticker VARCHAR(20) NOT NULL,
+
+    market_date DATE NOT NULL,
 
     open NUMERIC(15,4),
     high NUMERIC(15,4),
@@ -38,6 +41,26 @@ CREATE TABLE IF NOT EXISTS market_prices (
     close NUMERIC(15,4),
 
     volume BIGINT,
+
+    return_1d FLOAT,
+    return_5d FLOAT,
+    return_20d FLOAT,
+
+    volatility_20d FLOAT,
+
+    rsi_14 FLOAT,
+
+    atr_14 FLOAT,
+
+    volume_ratio FLOAT,
+
+    gap_pct FLOAT,
+
+    relative_strength FLOAT,
+
+    dollar_volume NUMERIC(20,2),
+
+    volume_surge FLOAT,
 
     created_at TIMESTAMP DEFAULT NOW(),
 
@@ -75,3 +98,18 @@ CREATE TABLE IF NOT EXISTS announcements
     timestamp TIMESTAMP,
     attachment_url TEXT
 );
+CREATE TABLE IF NOT EXISTS financial_signals (
+    signal_id SERIAL PRIMARY KEY,
+    article_id VARCHAR(255) NOT NULL,
+    ticker VARCHAR(50) NOT NULL,
+    sentiment VARCHAR(20) NOT NULL,
+    sentiment_confidence REAL NOT NULL,
+    weighted_sentiment_score REAL NOT NULL,
+    event_type VARCHAR(50),
+    event_confidence REAL,
+    novelty_score REAL NOT NULL,
+    source_credibility REAL NOT NULL,
+    processed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX idx_ticker ON financial_signals(ticker);
+CREATE INDEX idx_processed_at ON financial_signals(processed_at);

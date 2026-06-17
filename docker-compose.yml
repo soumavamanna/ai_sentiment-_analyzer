@@ -1,21 +1,33 @@
+version: '3.8'
+
 services:
+  # 1. Redis Cache (Accessible locally at localhost:6379)
   redis:
     image: redis:7-alpine
     container_name: sentiment-redis
-
     ports:
       - "6379:6379"
-
     restart: unless-stopped
-
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
-
     volumes:
       - redis_data:/data
 
+  # 2. Chroma Vector Database (Accessible locally at localhost:8000)
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: chroma_vector_db
+    ports:
+      - "8000:8000"
+    environment:
+      - IS_PERSISTENT=TRUE
+    restart: always
+    volumes:
+      - chroma_data:/chroma/chroma
+
 volumes:
   redis_data:
+  chroma_data:

@@ -8,3 +8,10 @@ yfinance
 finnhub-python
 praw
 schedule
+transformers
+torch
+sentence-transformers 
+pandas 
+scikit-learn
+chromadb
+flashtext

@@ -12,11 +12,28 @@ def save_market_data(
     (
         ticker,
         market_date,
+
         open,
         high,
         low,
         close,
-        volume
+        volume,
+
+        return_1d,
+        return_5d,
+        return_20d,
+
+        volatility_20d,
+
+        rsi_14,
+
+        atr_14,
+
+        volume_ratio,
+        gap_pct,
+        relative_strength,
+        dollar_volume,
+        volume_surge
     )
     VALUES
     (
@@ -26,7 +43,22 @@ def save_market_data(
         :high,
         :low,
         :close,
-        :volume
+        :volume,
+        :return_1d,
+        :return_5d,
+        :return_20d,
+
+        :volatility_20d,
+
+        :rsi_14,
+
+        :atr_14,
+
+        :volume_ratio,
+        :gap_pct,
+        :relative_strength,
+        :dollar_volume,
+        :volume_surge
     )
     ON CONFLICT
     (

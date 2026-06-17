@@ -29,7 +29,7 @@ class TradingQNACollector:
         try:
             async with session.get(self.base_url, headers=self.headers, params=params, timeout=15) as response:
                 if response.status != 200:
-                    print(f"TradingQ&A returned status {response.status} for {ticker}")
+                   
                     return []
                 
                 data = await response.json()
@@ -84,7 +84,7 @@ class TradingQNACollector:
         universe = get_universe()
         all_posts = []
 
-        print(f"Starting TradingQ&A scrape for {len(universe)} tickers...")
+        
 
         async with aiohttp.ClientSession() as session:
             tasks = [self.fetch_ticker_discussions(session, ticker) for ticker in universe]

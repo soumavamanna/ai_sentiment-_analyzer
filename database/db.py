@@ -4,7 +4,6 @@ import os
 from dotenv import load_dotenv
 load_dotenv(override=True)
 DATABASE_URL = os.getenv("DB_URL")
-print(f"🚨 Connecting to: {DATABASE_URL}")
 engine = create_engine(
     DATABASE_URL,
     pool_size=10,
