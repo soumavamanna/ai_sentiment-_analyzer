@@ -4,7 +4,7 @@ import feedparser
 import time
 from datetime import datetime, timezone
 from infrastructure.cache.redis_client import redis_client
-
+from utils.cache_manager import CacheManager
 # A dictionary of top-tier Indian financial RSS feeds
 RSS_FEEDS = {
     "Economic Times Markets": "https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms",
@@ -34,6 +34,7 @@ def parse_feed_entries(entries, source_name):
     fresh_articles = []
     
     for entry in entries:
+        article_id = entry.get("id") or entry.get("link")
         # 1. De-duplicate using published timestamp
         # feedparser automatically extracts structured time into 'published_parsed'
         if hasattr(entry, 'published_parsed') and entry.published_parsed:
@@ -43,7 +44,9 @@ def parse_feed_entries(entries, source_name):
 
         if last_ts and ts <= int(last_ts):
             continue
-
+        if CacheManager.is_processed("rss", article_id):
+            continue
+        
         # 2. Map fields to your normalized layout
         normalized = {
             "article_id": entry.get("id") or entry.get("link", str(ts)),
@@ -55,6 +58,7 @@ def parse_feed_entries(entries, source_name):
             "published_at": datetime.fromtimestamp(ts, tz=timezone.utc),
             "_timestamp": ts # Internal tracker helper
         }
+        CacheManager.mark_processed("rss", article_id, ttl=604800) # Keep for 7 days
         
         fresh_articles.append(normalized)
         

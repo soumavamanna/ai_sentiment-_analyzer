@@ -1,36 +1,14 @@
-from sqlalchemy import text
-
-from database.db import engine
-
-from services.company_signal_generator import (
-    generate_company_signal
-)
-
+from services.universe_service import get_universe
+from services.company_signal_generator import generate_company_signal
 
 def generate_all_company_signals():
-
-    query = text("""
-    SELECT ticker
-    FROM nse_company_metadata
-    """)
-
-    with engine.connect() as conn:
-
-        tickers = [
-            row[0]
-            for row in conn.execute(query)
-        ]
-
+    # Pull the universe directly from the CSV instead of the missing database table
+    tickers = get_universe()
     signals = []
 
     for ticker in tickers:
-
-        signal = generate_company_signal(
-            ticker
-        )
-
+        signal = generate_company_signal(ticker)
         if signal:
-
             signals.append(signal)
 
     return signals

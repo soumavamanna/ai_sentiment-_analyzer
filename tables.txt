@@ -1,0 +1,69 @@
+     table_name      |       column_name        |          data_type                                                                                           
+---------------------+--------------------------+-----------------------------
+ announcements       | announcement_id          | text
+ announcements       | exchange                 | text
+ announcements       | symbol                   | text
+ announcements       | subject                  | text
+ announcements       | details                  | text
+ announcements       | timestamp                | timestamp without time zone
+ announcements       | attachment_url           | text
+ article_company_map | article_id               | character varying
+ article_company_map | ticker                   | character varying
+ articles            | article_id               | character varying
+ articles            | title                    | text                                                                                                         
+ articles            | content                  | text                                                                                                         
+ articles            | source                   | character varying                                                                                            
+ articles            | url                      | text                                                                                                         
+ articles            | published_at             | timestamp without time zone                                                                                  
+ articles            | created_at               | timestamp without time zone                                                                                  
+ companies           | ticker                   | character varying                                                                                            
+ companies           | company_name             | character varying                                                                                            
+ companies           | sector                   | character varying                                                                                            
+ companies           | industry                 | character varying                                                                                            
+ companies           | market_cap_category      | character varying                                                                                            
+ companies           | created_at               | timestamp without time zone                                                                                  
+ financial_signals   | signal_id                | integer                                                                                                      
+ financial_signals   | article_id               | character varying                                                                                            
+ financial_signals   | ticker                   | character varying                                                                                            
+ financial_signals   | sentiment                | character varying                                                                                            
+ financial_signals   | sentiment_confidence     | real                                                                                                         
+ financial_signals   | weighted_sentiment_score | real                                                                                                         
+ financial_signals   | event_type               | character varying                                                                                            
+ financial_signals   | event_confidence         | real                                                                                                         
+ financial_signals   | novelty_score            | real                                                                                                         
+ financial_signals   | source_credibility       | real                                                                                                         
+ financial_signals   | processed_at             | timestamp without time zone                                                                                  
+ market_prices       | id                       | integer                                                                                                      
+ market_prices       | ticker                   | character varying                                                                                            
+ market_prices       | market_date              | date                                                                                                         
+ market_prices       | open                     | numeric                                                                                                      
+ market_prices       | high                     | numeric                                                                                                      
+ market_prices       | low                      | numeric                                                                                                      
+ market_prices       | close                    | numeric                                                                                                      
+ market_prices       | volume                   | bigint                                                                                                       
+ market_prices       | return_1d                | double precision                                                                                             
+ market_prices       | return_5d                | double precision                                                                                             
+ market_prices       | return_20d               | double precision                                                                                             
+ market_prices       | volatility_20d           | double precision                                                                                             
+ market_prices       | rsi_14                   | double precision                                                                                             
+ market_prices       | atr_14                   | double precision                                                                                             
+ market_prices       | volume_ratio             | double precision                                                                                             
+ market_prices       | gap_pct                  | double precision                                                                                             
+ market_prices       | relative_strength        | double precision                                                                                             
+ market_prices       | dollar_volume            | numeric                                                                                                      
+ market_prices       | volume_surge             | double precision                                                                                             
+ market_prices       | created_at               | timestamp without time zone                                                                                  
+ sector_membership   | ticker                   | character varying                                                                                            
+ sector_membership   | sector_name              | character varying                                                                                            
+ sector_signals      | id                       | integer                                                                                                      
+ sector_signals      | sector_name              | character varying                                                                                            
+ sector_signals      | sentiment_score          | double precision                                                                                             
+ sector_signals      | article_count            | integer                                                                                                      
+ sector_signals      | created_at               | timestamp without time zone                                                                                  
+ social_posts        | post_id                  | character varying                                                                                            
+ social_posts        | platform                 | character varying                                                                                            
+ social_posts        | author                   | character varying                                                                                            
+ social_posts        | text                     | text                                                                                                         
+ social_posts        | timestamp                | timestamp without time zone                                                                                  
+ social_posts        | engagement               | integer                                                                                                      
+ social_posts        | created_at               | timestamp without time zone                                                                                  

@@ -1,44 +1,29 @@
-import asyncio
-from database.repositories.article_repo import save_articles
-from ingestion.social.social_service import SocialService
-from ingestion.announcements.announcement_service import AnnouncementService
-from ingestion.news.news_service import get_relevant_news
-from ingestion.market.market_service import update_market_data
+from datetime import datetime, timedelta
+from services.model_manager import get_novelty_detector
+from config.logging_config import get_logger
 
-async def run():
-    # Instantiate your services ONCE outside the loop to save memory overhead
-    social_service = SocialService()
-    announcement_service = AnnouncementService()
+logger = get_logger(__name__)
 
-    while True:
-        try:
-            print("\n--- Starting Ingestion Cycle ---")
-            
-            # 1. Fetch and save news articles
-            news = await get_relevant_news()
-            save_articles(news)
-            
-            # 2. Update equity market prices 
-            # (If update_market_data is async, add 'await' here)
-            rows = await update_market_data() 
-            
-            # 3. Fetch social board discussions (Awaited)
-            social = await social_service.collect()
-            
-            # 4. Fetch exchange corporate filings
-            # FIX: Added 'await' assuming collect() handles async HTTP networking
-            announcements = await announcement_service.collect() 
+class SystemScheduler:
+    def __init__(self):
+        # Set the first ChromaDB cleanup to run immediately on script startup
+        self.next_cleanup_time = datetime.now()
+        self.novelty_detector = get_novelty_detector()
 
-            # Log operational updates
-            print(f"Saved {len(news)} news articles.")
-            print(f"Saved {rows} market price rows.")
-            print(f"Social posts collected: {len(social)}")
-            print(f"Announcements collected: {len(announcements)}")
+    def run_pending_tasks(self):
+        """Checks the clock and executes any tasks that are due."""
+        print("\n[4/4] System Maintenance Check...")
+        
+        if datetime.now() >= self.next_cleanup_time:
+            print(" 🧹 Running daily ChromaDB vector cleanup...")
             
-        except Exception as e:
-            # Wrap the iteration in a try-except block so a single network timeout 
-            # or database glitch doesn't kill your entire background service permanently.
-            print(f"CRITICAL: Error during ingestion execution pass: {e}")
-
-        print("Ingestion pass complete. Sleeping for 15 minutes...")
-        await asyncio.sleep(900)
+            try:
+                self.novelty_detector.cleanup_old_vectors(days=30) 
+                self.next_cleanup_time = datetime.now() + timedelta(days=1)
+                print(f" ✅ Cleanup complete. Next run at: {self.next_cleanup_time.strftime('%Y-%m-%d %H:%M:%S')}")
+            except Exception as e:
+                print(f" ❌ Maintenance task failed: {e}")
+                # Retry in 1 hour if it fails, rather than waiting a full day
+                self.next_cleanup_time = datetime.now() + timedelta(hours=1)
+        else:
+            print(f" ⏳ Next DB cleanup scheduled for: {self.next_cleanup_time.strftime('%Y-%m-%d %H:%M:%S')}")

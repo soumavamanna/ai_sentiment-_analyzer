@@ -1,38 +1,37 @@
+# main.py
+
 from services.pipeline import FinancialSignalPipeline
-from database.db_manager import DatabaseManager
+from database.repositories.financial_signal_repo import save_financial_signals
 
 def main():
-    # Initialize the engine modules and the database backend
     pipeline = FinancialSignalPipeline()
-    db = DatabaseManager()
 
-    # Mock raw incoming payload from an RSS parser or Marketaux webhook
+    # A mock payload simulating a major Phase 3 catalyst
     mock_incoming_payload = {
-        "id": "news_98324",
-        "source": "https://www.moneycontrol.com/news/business/markets/livemint-news-update",
-        "text": "Reliance Industries shares surge as RIL announces a massive share buyback plan alongside a major earnings beat in Q4."
+        "id": "news_test_001",
+        "source": "https://economictimes.indiatimes.com/markets/test",
+        "text": "Reliance Industries announces a massive share buyback plan and beats Q4 earnings estimates. Trading volume surged."
     }
 
-    print("Processing incoming news content...")
-    
-    # 1. Run raw text through the NLP and entity mapping components
+    print("Processing incoming Phase 3 test payload...")
     structured_signals = pipeline.process_article(mock_incoming_payload)
     
     if structured_signals:
-        print(f"Generated {len(structured_signals)} structured market signals.")
+        print(f"\n✅ Generated {len(structured_signals)} structured market signals.")
         
-        # 2. Persist the signals cleanly to SQLite
-        db.insert_signals(structured_signals)
-        print("Successfully committed signals to relational database storage.")
-        
-        # Print results to verify output formatting
+        # Print results to verify output formatting and Explainability Engine
         for signal in structured_signals:
-            print(f"\nSaved Signal Details [{signal['ticker']}]:")
-            print(f" - Sentiment: {signal['sentiment']} ({signal['sentiment_confidence']})")
-            print(f" - Event Group: {signal['event_type']} ({signal['event_confidence']})")
-            print(f" - Novelty Score: {signal['novelty_score']}")
+            print("\n" + "="*50)
+            print(f"[{signal['ticker']}] COMPOSITE SCORE: {signal['composite_score']}/100")
+            print("="*50)
+            print(signal['explanation'])
+            print("="*50)
+
+        # Commit directly using SQLAlchemy
+        save_financial_signals(structured_signals)
+        print("\n✅ Successfully committed Phase 3 signals to PostgreSQL.")
     else:
-        print("No recognized NSE ticker found or article didn't yield actionable signals.")
+        print("❌ No signals generated.")
 
 if __name__ == "__main__":
     main()

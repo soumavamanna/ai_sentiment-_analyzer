@@ -1,8 +1,7 @@
-from services.universe_service import get_universe, get_ticker_aliases
+from services.ticker_resolver import TickerResolver
 
-UNIVERSE = get_universe()
-# Generate the alias mapping dynamically from your CSV
-TICKER_ALIASES = get_ticker_aliases()
+# Initialize the resolver once at the module level to prevent overhead on every article check
+resolver = TickerResolver()
 
 def article_relevant(article):
     # Combine title and content to search against
@@ -10,24 +9,17 @@ def article_relevant(article):
         article.get("title", "") 
         + " " 
         + article.get("content", "")
-    ).upper()
+    )
 
     # If the text is completely empty, fail fast
     if not text.strip():
         return False
 
-    for ticker in UNIVERSE:
-        # Strip '.NS' and clean up spaces
-        base_ticker = ticker.replace(".NS", "").strip().upper()
-
-        # 1. Check for the raw base ticker (e.g., "ITC")
-        if base_ticker in text:
-            return True
-
-        # 2. Check the dynamic aliases from your CSV
-        aliases = TICKER_ALIASES.get(base_ticker, [])
-        for alias in aliases:
-            if alias in text:
-                return True
+    # Leverage the FlashText KeywordProcessor to find strict, word-bounded matches
+    matched_companies = resolver.extract_ticker_info(text)
+    
+    # If the resolver found at least one valid company from the metadata, it's relevant
+    if matched_companies:
+        return True
 
     return False

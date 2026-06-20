@@ -69,3 +69,8 @@ class NoveltyDetector:
         )
 
         return novelty_score
+    def cleanup_old_vectors(self, days=30):
+        threshold = int(time.time()) - (days * 24 * 60 * 60)
+        self.collection.delete(
+            where={"timestamp": {"$lt": threshold}}
+        )

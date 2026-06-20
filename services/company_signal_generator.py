@@ -1,116 +1,90 @@
-from database.repositories.company_signal_repo import (
-    get_company_context
-)
+# services/company_signal_generator.py
 
+from database.repositories.company_signal_repo import get_company_context
 
-def generate_company_signal(
-    ticker: str
-):
-
-    ctx = get_company_context(
-        ticker
-    )
+def generate_company_signal(ticker: str):
+    ctx = get_company_context(ticker)
 
     if not ctx:
         return None
+    print(f"\n[AUDIT: {ticker}]")
+    print(f"  News Count: {ctx.get('news_count')} | Sentiment: {ctx.get('news_sentiment')}")
+    print(f"  Social Count: {ctx.get('social_count')} | Sentiment: {ctx.get('social_sentiment')}")
+    print(f"  Announcements: {ctx.get('announcement_count')} | Impact: {ctx.get('announcement_score')}")
+    print(f"  Market Data: Vol Ratio: {ctx.get('volume_ratio')} | RSI: {ctx.get('rsi_14')}")
+    # 1. Safely extract and cast to float to prevent Decimal vs Float crashes
+    news_sentiment = float(ctx.get("news_sentiment") or 0.0)
+    announcement_score = float(ctx.get("announcement_score") or 0.0)
+    social_sentiment = float(ctx.get("social_sentiment") or 0.0)
+    
+    return_5d = float(ctx.get("return_5d") or 0.0)
+    return_20d = float(ctx.get("return_20d") or 0.0)
+    rsi = float(ctx.get("rsi_14") or 50.0) # Default RSI to neutral 50
+    volume_ratio = float(ctx.get("volume_ratio") or 1.0)
+    volatility_20d = float(ctx.get("volatility_20d") or 0.0)
 
-    score = 0
+    score = 0.0
 
     # --------------------
     # NEWS
     # --------------------
-
-    score += (
-        ctx["news_sentiment"] * 30
-    )
+    score += (news_sentiment * 30.0)
 
     # --------------------
     # ANNOUNCEMENTS
     # --------------------
-
-    score += (
-        ctx["announcement_score"] * 25
-    )
+    score += (announcement_score * 25.0)
 
     # --------------------
     # SOCIAL
     # --------------------
-
-    score += (
-        ctx["social_sentiment"] * 15
-    )
+    score += (social_sentiment * 15.0)
 
     # --------------------
     # PRICE MOMENTUM
     # --------------------
-
-    score += (
-        ctx["return_5d"] * 100 * 0.10
-    )
-
-    score += (
-        ctx["return_20d"] * 100 * 0.05
-    )
+    score += (return_5d * 100.0 * 0.10)
+    score += (return_20d * 100.0 * 0.05)
 
     # --------------------
     # RSI
     # --------------------
-
-    rsi = ctx["rsi_14"]
-
-    if rsi < 30:
-
-        score += 10
-
-    elif rsi > 70:
-
-        score -= 10
+    if rsi < 30.0:
+        score += 10.0
+    elif rsi > 70.0:
+        score -= 10.0
 
     # --------------------
     # VOLUME CONFIRMATION
     # --------------------
-
-    if ctx["volume_ratio"] > 2:
-
-        score += 5
+    if volume_ratio > 2.0:
+        score += 5.0
 
     # --------------------
     # VOLATILITY PENALTY
     # --------------------
-
-    if ctx["volatility_20d"] > 0.08:
-
-        score -= 5
+    if volatility_20d > 0.08:
+        score -= 5.0
 
     # --------------------
     # SIGNAL LABEL
     # --------------------
-
     if score >= 30:
-
         signal = "STRONG BUY"
-
     elif score >= 15:
-
         signal = "BUY"
-
     elif score <= -30:
-
         signal = "STRONG SELL"
-
     elif score <= -15:
-
         signal = "SELL"
-
     else:
-
         signal = "HOLD"
 
     return {
         "ticker": ticker,
         "signal": signal,
         "score": round(score, 2),
-        "news_sentiment": ctx["news_sentiment"],
-        "announcement_score": ctx["announcement_score"],
-        "social_sentiment": ctx["social_sentiment"]
+        "news_sentiment": round(news_sentiment, 4),
+        "announcement_score": round(announcement_score, 4),
+        "social_sentiment": round(social_sentiment, 4)
     }

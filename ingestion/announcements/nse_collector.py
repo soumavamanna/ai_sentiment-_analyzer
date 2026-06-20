@@ -3,7 +3,7 @@ import hashlib
 import asyncio
 from curl_cffi import requests  # Upgraded session client
 from infrastructure.cache.redis_client import redis_client
-
+from services.universe_service import get_universe
 class NSECollector:
     BASE_URL = "https://www.nseindia.com/api/corporate-announcements?index=equities"
     HOME_URL = "https://www.nseindia.com"
@@ -52,6 +52,10 @@ class NSECollector:
         if not data:
             return []
 
+        # 1. Fetch your active universe (e.g., ["RELIANCE.NS", "TCS.NS"])
+        from services.universe_service import get_universe
+        universe = get_universe()
+
         try:
             last_ts = redis_client.get(self.REDIS_LAST_TS_KEY)
             if isinstance(last_ts, bytes):
@@ -63,6 +67,15 @@ class NSECollector:
             redis_keys = []
 
             for item in data:
+                raw_symbol = item.get("symbol", "UNKNOWN")
+                
+                # --- THE FIX: Convert NSE symbol to Yahoo Finance format ---
+                formatted_symbol = f"{raw_symbol}.NS"
+                
+                # Filter out anything not in our 30-company universe
+                if formatted_symbol not in universe:
+                    continue
+
                 raw_time = item.get("an_dt")
                 if not raw_time:
                     continue
@@ -76,19 +89,20 @@ class NSECollector:
                 if last_ts and timestamp <= last_ts:
                     continue
 
-                symbol = item.get("symbol", "UNKNOWN")
                 subject = item.get("attchmntText", item.get("desc", ""))
                 
-                announcement_id = self._generate_id(symbol, subject, timestamp)
+                # Use the formatted symbol for ID generation
+                announcement_id = self._generate_id(formatted_symbol, subject, timestamp)
                 redis_key = f"{self.REDIS_ARTICLE_PREFIX}{announcement_id}"
 
                 redis_keys.append(redis_key)
-                pending_items.append((redis_key, announcement_id, timestamp, item, symbol, subject))
+                
+                # Pass the formatted_symbol into our pending list
+                pending_items.append((redis_key, announcement_id, timestamp, item, formatted_symbol, subject))
 
             if not pending_items:
                 return []
 
-            # Keep Redis checks inside a pipeline execution context blocks
             with redis_client.pipeline() as read_pipe:
                 for key in redis_keys:
                     read_pipe.exists(key)
@@ -102,7 +116,7 @@ class NSECollector:
                     announcement = {
                         "announcement_id": ann_id,
                         "exchange": "NSE",
-                        "symbol": symbol,
+                        "symbol": symbol, # <--- This now correctly saves "RELIANCE.NS" to PostgreSQL
                         "subject": subject,
                         "details": item.get("desc", ""),
                         "timestamp": timestamp,

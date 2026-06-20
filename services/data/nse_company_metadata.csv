@@ -1,13 +1,32 @@
 ticker,company_name,sector,industry,market_cap,index_memberships,aliases
-RELIANCE.NS,Reliance Industries,Energy,Oil & Gas,Large Cap,"NIFTY50|NIFTYENERGY","Reliance|Reliance Industries|RIL"
-TCS.NS,Tata Consultancy Services,IT,Software,Large Cap,"NIFTY50|NIFTYIT","TCS|Tata Consultancy Services"
-INFY.NS,Infosys,IT,Software,Large Cap,"NIFTY50|NIFTYIT","Infosys|INFY"
-HDFCBANK.NS,HDFC Bank,Banking,Private Bank,Large Cap,"NIFTY50|NIFTYBANK","HDFC Bank|HDFC"
-ICICIBANK.NS,ICICI Bank,Banking,Private Bank,Large Cap,"NIFTY50|NIFTYBANK","ICICI Bank|ICICI"
-SBIN.NS,State Bank of India,Banking,PSU Bank,Large Cap,"NIFTY50|NIFTYBANK","SBI|State Bank of India"
-LT.NS,Larsen & Toubro,Construction,Engineering & Construction,Large Cap,"NIFTY50|NIFTYINFRA","L&T|Larsen|Larsen & Toubro"
-AXISBANK.NS,Axis Bank,Banking,Private Bank,Large Cap,"NIFTY50|NIFTYBANK","Axis Bank|Axis"
-ITC.NS,ITC Limited,FMCG,FMCG & Cigarettes,Large Cap,"NIFTY50|NIFTYFMCG","ITC|ITC Limited"
-BHARTIARTL.NS,Bharti Airtel,Telecommunication,Telecom Services,Large Cap,"NIFTY50","Bharti Airtel|Airtel"
-TMPV.NS,Tata Motors Passenger Vehicles,Automobile,Passenger Vehicles,Large Cap,"NIFTY50|NIFTYAUTO","Tata Motors Passenger|TMPV|Tata Motors|TaMo"
-TMCV.NS,Tata Motors Commercial Vehicles,Automobile,Commercial Vehicles,Large Cap,"NIFTY50|NIFTYAUTO","Tata Motors Commercial|TMCV|Tata Motors Trucks"
+RELIANCE.NS,Reliance Industries Limited,Energy,Oil & Gas,Large Cap,NIFTY50,RELIANCE|RIL|RELIANCE IND
+TCS.NS,Tata Consultancy Services,Information Technology,IT Services,Large Cap,NIFTY50,TCS|TATA CONSULTANCY
+HDFCBANK.NS,HDFC Bank Limited,Financials,Banks,Large Cap,NIFTY50,HDFCBANK|HDFC BANK|HDFC
+ICICIBANK.NS,ICICI Bank Limited,Financials,Banks,Large Cap,NIFTY50,ICICIBANK|ICICI BANK|ICICI
+INFY.NS,Infosys Limited,Information Technology,IT Services,Large Cap,NIFTY50,INFY|INFOSYS
+ITC.NS,ITC Limited,Consumer Staples,Tobacco & FMCG,Large Cap,NIFTY50,ITC|ITC LTD
+TMCV.NS,Tata Motors CV,Consumer Discretionary,Automobiles,Large Cap,NIFTY50,TMCV|TATA MOTORS
+TMPV.NS,Tata Motors PV,Consumer Discretionary,Automobiles,Large Cap,NIFTY50,TMPV|TATA MOTORS
+PAYTM.NS,One 97 Communications,Financials,Fintech,Mid Cap,NIFTY500,PAYTM|ONE97|ONE 97
+ETERNAL.NS,Eternal Limited,Industrials,Manufacturing,Small Cap,NIFTY500,ETERNAL
+LT.NS,Larsen & Toubro Limited,Industrials,Construction,Large Cap,NIFTY50,LT|L&T|LARSEN
+SBIN.NS,State Bank of India,Financials,Banks,Large Cap,NIFTY50,SBIN|SBI|STATE BANK
+BHARTIARTL.NS,Bharti Airtel Limited,Communication Services,Telecom,Large Cap,NIFTY50,BHARTIARTL|AIRTEL|BHARTI AIRTEL
+SUZLON.NS,Suzlon Energy Limited,Industrials,Electrical Equipment,Mid Cap,NIFTY500,SUZLON|SUZLON ENERGY
+JIOFIN.NS,Jio Financial Services,Financials,NBFC,Large Cap,NIFTY100,JIOFIN|JFS|JIO FINANCIAL
+IREDA.NS,Indian Renewable Energy Dev Agency,Financials,Term Lending,Mid Cap,NIFTY500,IREDA
+IRFC.NS,Indian Railway Finance Corp,Financials,NBFC,Large Cap,NIFTY100,IRFC|INDIAN RAILWAY FINANCE
+RVNL.NS,Rail Vikas Nigam Limited,Industrials,Construction,Mid Cap,NIFTY500,RVNL|RAIL VIKAS NIGAM
+YESBANK.NS,Yes Bank Limited,Financials,Banks,Mid Cap,NIFTY100,YESBANK|YES BANK
+IDEA.NS,Vodafone Idea Limited,Communication Services,Telecom,Mid Cap,NIFTY100,IDEA|VODAFONE IDEA|VI
+ADANIENT.NS,Adani Enterprises Limited,Industrials,Conglomerates,Large Cap,NIFTY50,ADANIENT|ADANI ENT|ADANI
+TATASTEEL.NS,Tata Steel Limited,Materials,Metals & Mining,Large Cap,NIFTY50,TATASTEEL|TATA STEEL
+M&M.NS,Mahindra & Mahindra,Consumer Discretionary,Automobiles,Large Cap,NIFTY50,M&M|MAHINDRA|MAHINDRA & MAHINDRA
+BAJFINANCE.NS,Bajaj Finance Limited,Financials,NBFC,Large Cap,NIFTY50,BAJFINANCE|BAJAJ FINANCE
+HAL.NS,Hindustan Aeronautics Limited,Industrials,Aerospace & Defense,Large Cap,NIFTY100,HAL|HINDUSTAN AERONAUTICS
+BHEL.NS,Bharat Heavy Electricals Ltd,Industrials,Electrical Equipment,Mid Cap,NIFTY100,BHEL|BHARAT HEAVY ELECTRICALS
+MAZDOCK.NS,Mazagon Dock Shipbuilders,Industrials,Aerospace & Defense,Mid Cap,NIFTY500,MAZDOCK|MAZAGON DOCK
+INDIGO.NS,InterGlobe Aviation Limited,Industrials,Airlines,Large Cap,NIFTY100,INDIGO|INTERGLOBE AVIATION
+TRENT.NS,Trent Limited,Consumer Discretionary,Retail,Large Cap,NIFTY50,TRENT|TRENT LTD
+VEDL.NS,Vedanta Limited,Materials,Metals & Mining,Large Cap,NIFTY100,VEDL|VEDANTA
+JSWSTEEL.NS,JSW Steel Limited,Materials,Metals & Mining,Large Cap,NIFTY50,JSWSTEEL|JSW STEEL

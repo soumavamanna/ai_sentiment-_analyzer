@@ -72,3 +72,21 @@ class FinancialNLP:
             "event_type": result["labels"][0],
             "confidence": round(result["scores"][0], 4)
         }
+    def sentiment_to_score(
+        self,
+        sentiment: str,
+        confidence: float
+    ):
+
+        mapping = {
+            "positive": 1,
+            "negative": -1,
+            "neutral": 0
+        }
+
+        return (
+            mapping.get(
+                sentiment.lower(),
+                0
+            ) * confidence
+        )

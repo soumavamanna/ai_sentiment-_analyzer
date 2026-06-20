@@ -80,16 +80,23 @@ class TradingQNACollector:
         return posts_data
 
     async def run_collection(self):
-        """Runs the asynchronous loop across your entire Universe."""
+        """Runs the asynchronous loop across your entire Universe with rate-limiting."""
         universe = get_universe()
         all_posts = []
 
-        
+        # Limit to 2 concurrent connections to avoid triggering anti-bot protection
+        sem = asyncio.Semaphore(2)
+
+        async def bounded_fetch(session, ticker):
+            async with sem:
+                # Add a 1-second human-like delay between requests
+                await asyncio.sleep(1.0)
+                return await self.fetch_ticker_discussions(session, ticker)
 
         async with aiohttp.ClientSession() as session:
-            tasks = [self.fetch_ticker_discussions(session, ticker) for ticker in universe]
+            tasks = [bounded_fetch(session, ticker) for ticker in universe]
             
-            # Gather results concurrently
+            # Gather results concurrently, but constrained by the semaphore
             results = await asyncio.gather(*tasks, return_exceptions=True)
 
             for result in results:
